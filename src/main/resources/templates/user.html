@@ -1,12 +1,39 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <title>Spring Security Example</title>
+    <meta charset="UTF-8">
+    <title>User table</title>
 </head>
 <body>
-<h1>User, welcome spring boot security page!</h1>
-
-
-
+<h1>Users table</h1>
+<br/>
+<div>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Age</th>
+            <th>E-mail</th>
+            <th>Role</th>
+            <th></th>
+        </tr>
+        <tr>
+<!--            <td th:utext="${user.geId()}">...</td>-->
+<!--            <td th:utext="${user.getFirstname()}">...</td>-->
+<!--            <td th:utext="${user.getLastname()}">...</td>-->
+<!--            <td th:utext="${user.getAge()}">...</td>-->
+<!--            <td th:utext="${user.getEmail()}">...</td>-->
+<!--            <td >-->
+<!--                <ul>-->
+<!--                    <li th:each="role : ${user.roles}" th:text="${role.name}"></li>-->
+<!--                </ul>-->
+<!--            </td>-->
+        </tr>
+    </table>
+    <br/>
+    <input type="button" value="Logout" onclick="window.location.href = '/logout'">
+</div>
 </body>
 </html>
