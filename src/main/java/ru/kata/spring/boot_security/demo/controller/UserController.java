@@ -25,9 +25,9 @@ public class UserController {
 
     @GetMapping(name = "/")
 //    @ResponseBody
-    public String showUserInfo() {
-//        User user = userService.findByEmail(principal.getName());
-//        model.addAttribute("user", user);
+    public String showUserInfo(Principal principal, ModelMap model) {
+        User user = userService.findByEmail(principal.getName());
+        model.addAttribute("user", user);
         return "user";
     }
 }

@@ -19,18 +19,18 @@
             <th>Role</th>
             <th></th>
         </tr>
-<!--        <tr>-->
-<!--            <td th:utext="${user.geId()}">...</td>-->
-<!--            <td th:utext="${user.getFirstname()}">...</td>-->
-<!--            <td th:utext="${user.getLastname()}">...</td>-->
-<!--            <td th:utext="${user.getAge()}">...</td>-->
-<!--            <td th:utext="${user.getEmail()}">...</td>-->
-<!--            <td >-->
-<!--                <ul>-->
-<!--                    <li th:each="role : ${user.roles}" th:text="${role.name}"></li>-->
-<!--                </ul>-->
-<!--            </td>-->
-<!--        </tr>-->
+        <tr>
+            <td th:utext="${user.getId()}">...</td>
+            <td th:utext="${user.getFirstname()}">...</td>
+            <td th:utext="${user.getLastname()}">...</td>
+            <td th:utext="${user.getAge()}">...</td>
+            <td th:utext="${user.getEmail()}">...</td>
+            <td >
+                <ul>
+                    <li th:each="role : ${user.roles}" th:text="${#strings.substringAfter(role.getName(), '_')}"></li>
+                </ul>
+            </td>
+        </tr>
     </table>
 </div>
 
