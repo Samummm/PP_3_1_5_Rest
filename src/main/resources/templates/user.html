@@ -6,7 +6,7 @@
     <title>User table</title>
 </head>
 <body>
-<h1>Users table</h1>
+<h1>User table</h1>
 <br/>
 <div>
     <table>
@@ -19,7 +19,7 @@
             <th>Role</th>
             <th></th>
         </tr>
-        <tr>
+<!--        <tr>-->
 <!--            <td th:utext="${user.geId()}">...</td>-->
 <!--            <td th:utext="${user.getFirstname()}">...</td>-->
 <!--            <td th:utext="${user.getLastname()}">...</td>-->
@@ -30,10 +30,20 @@
 <!--                    <li th:each="role : ${user.roles}" th:text="${role.name}"></li>-->
 <!--                </ul>-->
 <!--            </td>-->
-        </tr>
+<!--        </tr>-->
     </table>
-    <br/>
-    <input type="button" value="Logout" onclick="window.location.href = '/logout'">
 </div>
+
+<br/>
+
+<input type="submit" value="Admin mode" th:if="${#request.isUserInRole('ADMIN')}"
+           onclick="window.location.href = '/admin/'">
+
+<h1></h1>
+
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Logout">
+    </form>
+
 </body>
 </html>
