@@ -1,7 +1,6 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 
-import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,7 +23,6 @@ public class UserController {
     }
 
     @GetMapping(name = "/")
-//    @ResponseBody
     public String showUserInfo(Principal principal, ModelMap model) {
         User user = userService.findByEmail(principal.getName());
         model.addAttribute("user", user);

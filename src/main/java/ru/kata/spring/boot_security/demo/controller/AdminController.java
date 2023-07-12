@@ -6,15 +6,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.entities.Role;
 import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -70,24 +64,9 @@ public class AdminController {
         return "userInfo";
     }
 
-//    @ResponseBody
     @RequestMapping(value ="/delete")
     public String deleteUser(@RequestParam(value = "id") Integer id) {
         userService.deleteUser(id);
-        return "redirect:/admin/";
-    }
-
-    @GetMapping("/save1")
-    public String saveMyUser() {
-        User user = new User();
-        user.setFirstname("John");
-        user.setLastname("Doe");
-        user.setAge(25);
-        user.setEmail("john.doe@example.com");
-        user.setPassword("password");
-        Role userRole = roleService.findByName("ROLE_USER");
-        user.addRoleToUser(userRole);
-        userService.saveUser(user);
         return "redirect:/admin/";
     }
 }
