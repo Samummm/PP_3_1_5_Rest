@@ -4,7 +4,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -33,18 +35,25 @@ public class User implements UserDetails {
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Collection<Role> roles;
+    private List<Role> roles;
 
     public User() {
     }
 
-    public User(String firstname, String surname, Integer age, String email, String password, Collection<Role> roles) {
+    public User(String firstname, String surname, Integer age, String email, String password, List<Role> roles) {
         this.firstname = firstname;
         this.lastname = surname;
         this.age = age;
         this.email = email;
         this.password = password;
         this.roles = roles;
+    }
+
+    public void addRoleToUser(Role role) {
+        if (roles == null) {
+            roles = new ArrayList<>();
+        }
+        roles.add(role);
     }
 
     public Integer getId() {
@@ -95,7 +104,7 @@ public class User implements UserDetails {
         return roles;
     }
 
-    public void setRoles(Collection<Role> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 

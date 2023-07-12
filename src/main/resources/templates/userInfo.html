@@ -12,18 +12,41 @@
 <form method="post" th:action="${user.getId() == null ? 'save' : 'save?id=' + user.getId()}" th:object="${user}">
     <br>
     <div>
-        <label>Name:</label>
-        <input type="text" th:field="*{name}" th:placeholder="${name}"/>
+        <label>ID:</label>
+        <input type="number" th:field="*{id}" th:placeholder="${id}" readonly="readonly" />
     </div>
     <br/>
     <div>
-        <label>Surname:</label>
-        <input type="text" th:field="*{surname}" th:placeholder="${surname}" />
+        <label>First Name:</label>
+        <input type="text" th:field="*{firstname}" th:placeholder="${firstname}"/>
+    </div>
+    <br/>
+    <div>
+        <label>Last Name:</label>
+        <input type="text" th:field="*{lastname}" th:placeholder="${lastname}" />
     </div>
     <br/>
     <div>
         <label>Age:</label>
         <input type="number" th:field="*{age}" th:placeholder="${age}" />
+    </div>
+    <br/>
+    <div>
+        <label>E-mail:</label>
+        <input type="text" th:field="*{email}" th:placeholder="${email}" />
+    </div>
+    <br/>
+    <div>
+        <label>Password:</label>
+        <input type="password" th:field="*{password}" th:placeholder="${password}" />
+    </div>
+    <br/>
+    <div>
+        <label>Role:</label>
+        <select th:field="*{roles}" multiple>
+            <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name.substring(5)}"></option>
+        </select>
+    </div>
     </div>
     <br/>
     <input type="submit" value="Save"/>
