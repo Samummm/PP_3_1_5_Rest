@@ -9,7 +9,7 @@
 <h1>User Info</h1>
 <br/>
 
-<form method="post" th:action="${user.getId() == null ? 'save' : 'save?id=' + user.getId()}" th:object="${user}">
+<form method="post" th:action="saveNew" th:object="${user}">
     <br>
     <div>
         <label>ID:</label>

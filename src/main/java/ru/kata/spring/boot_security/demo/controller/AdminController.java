@@ -2,7 +2,6 @@ package ru.kata.spring.boot_security.demo.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -37,34 +36,35 @@ public class AdminController {
     public String addUser(ModelMap model) {
         model.addAttribute("user", new User());
         model.addAttribute("allRoles", roleService.getAllRoles());
-        return "userInfo";
+        return "userNew";
     }
 
-    @PostMapping("/save")
-    public String saveUser(@ModelAttribute("user") User user, @RequestParam(value = "id", defaultValue = "0") Integer id) {
-        if (id == 0) {
-            user.setPassword(encoderService.encoder(user.getPassword()));
-        } else {
-            if (user.getPassword() == null || user.getPassword().isEmpty()) {
-                user.setPassword(userService.getUser(id).getPassword());
-            } else {
-                user.setPassword(encoderService.encoder(user.getPassword()));
-            }
-            user.setId(id);
-        }
-
+    @PostMapping("/saveNew")
+    public String saveNewUser(@ModelAttribute("user") User user) {
+        user.setPassword(encoderService.encoder(user.getPassword()));
         userService.saveUser(user);
         return "redirect:/admin/";
     }
 
-    @RequestMapping(value = "/update")
+    @PostMapping("/saveOld")
+    public String saveOldUser(@ModelAttribute("user") User user) {
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            user.setPassword(userService.getUser(user.getId()).getPassword());
+        } else {
+            user.setPassword(encoderService.encoder(user.getPassword()));
+        }
+        userService.saveUser(user);
+        return "redirect:/admin/";
+    }
+
+    @GetMapping(value = "/update")
     public String updateUser(@RequestParam(value = "id") Integer id, ModelMap model) {
         model.addAttribute("user", userService.getUser(id));
         model.addAttribute("allRoles", roleService.getAllRoles());
-        return "userInfo";
+        return "userOld";
     }
 
-    @RequestMapping(value ="/delete")
+    @GetMapping(value ="/delete")
     public String deleteUser(@RequestParam(value = "id") Integer id) {
         userService.deleteUser(id);
         return "redirect:/admin/";
