@@ -37,6 +37,7 @@ public class UserServiceImp implements UserService , UserDetailsService {
         userRepository.deleteById(id);
     }
 
+    @Override
     public User getUser(Integer id) {
         return userRepository.findById(id).get();
     }
@@ -57,8 +58,7 @@ public class UserServiceImp implements UserService , UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(String.format("User with E-mail: '%s' not found", email));
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),
-                user.getPassword(), user.getAuthorities());
+        return user;
     }
 }
 
