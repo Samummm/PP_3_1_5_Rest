@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.entities.User;
-import ru.kata.spring.boot_security.demo.services.EncoderService;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
@@ -16,13 +15,11 @@ public class AdminController {
 
     private UserService userService;
     private RoleService roleService;
-    private EncoderService encoderService;
 
     @Autowired
-    public AdminController(UserService userService, RoleService roleService, EncoderService encoderService) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.encoderService = encoderService;
     }
 
 
@@ -41,7 +38,7 @@ public class AdminController {
 
     @PostMapping("/saveNew")
     public String saveNewUser(@ModelAttribute("user") User user) {
-        user.setPassword(encoderService.encoder(user.getPassword()));
+        user.setPassword(userService.encoder(user.getPassword()));
         userService.saveUser(user);
         return "redirect:/admin/";
     }
@@ -51,7 +48,7 @@ public class AdminController {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             user.setPassword(userService.getUser(user.getId()).getPassword());
         } else {
-            user.setPassword(encoderService.encoder(user.getPassword()));
+            user.setPassword(userService.encoder(user.getPassword()));
         }
         userService.saveUser(user);
         return "redirect:/admin/";

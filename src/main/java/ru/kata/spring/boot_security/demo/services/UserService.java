@@ -17,4 +17,6 @@ public interface UserService {
     public List<User> getAllUsers();
 
     public User findByEmail(String email);
+
+    public String encoder(String unencoded);
 }

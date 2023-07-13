@@ -1,9 +1,10 @@
 package ru.kata.spring.boot_security.demo.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.entities.User;
@@ -15,11 +16,12 @@ import java.util.List;
 @Transactional
 public class UserServiceImp implements UserService , UserDetailsService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
     public UserServiceImp(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Override
@@ -59,6 +61,11 @@ public class UserServiceImp implements UserService , UserDetailsService {
             throw new UsernameNotFoundException(String.format("User with E-mail: '%s' not found", email));
         }
         return user;
+    }
+
+    @Override
+    public String encoder(String unencoded) {
+        return passwordEncoder.encode(unencoded).replace("{bcrypt}", "");
     }
 }
 
