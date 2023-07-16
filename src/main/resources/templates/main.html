@@ -16,13 +16,13 @@
         <div class="row">
             <div class="col-5 text-start">
                 <h2 class="d-inline text-white text-lg-start">
-                    <span th:text="${user.email}" style="font-weight: bold;"/>
+                    <span th:text="${userLog.email}" style="font-weight: bold;"/>
                 </h2>
             </div>
             <div class="col-4 text-left">
                 <h2 class="d-inline text-white text-start">
                     With roles:
-                    <span th:each="role : ${user.roles}" th:text="${#strings.substringAfter(role.name, '_') + ' ' }"/>
+                    <span th:each="role : ${userLog.roles}" th:text="${#strings.substringAfter(role.name, '_') + ' ' }"/>
                 </h2>
             </div>
             <div class="col-3 text-end">
@@ -94,7 +94,56 @@
                                     <a href="#"><input class="btn btn-info" type="button" value="Edit"></a>
                                 </td>
                                 <td>
-                                    <a href="#"><input class="btn btn-danger" type="button" value="Delete"></a>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                            th:attr="data-bs-target=${'#' + 'delete' + user.getId()}">Delete
+                                    </button>
+<!------------------------------------------------------------------------------------------------------------------------------------>
+<div class="modal fade" th:id="${'delete' + user.getId()}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" th:action="main">
+                    <div class="mb-3">
+                        <label for="deleteId" class="form-label">ID:</label>
+                        <input type="text" th:placeholder="${user.getId()}" class="form-control" id="deleteId" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteFirstName" class="form-label">First Name:</label>
+                        <input type="text" th:placeholder="${user.getFirstname()}" class="form-control" id="deleteFirstName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteLastName" class="form-label">Last Name:</label>
+                        <input type="text" th:placeholder="${user.getLastname()}" class="form-control" id="deleteLastName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteAge" class="form-label">Age:</label>
+                        <input type="text" th:placeholder="${user.getAge()}" class="form-control" id="deleteAge" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteEmail" class="form-label">Email:</label>
+                        <input type="text" th:placeholder="${user.getEmail()}" class="form-control" id="deleteEmail" readonly>
+                    </div>
+                    <div class="mb-3">
+                       <label for="deleteRole" class="form-label">Role:</label>
+                       <select class="form-control" id="deleteRole" multiple readonly>
+                           <option th:each="role : ${user.roles}" th:text="${role.getName().substring(5)}"></option>
+                       </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a th:href="@{'delete?id=' + ${user.getId()}}"><button type="button" class="btn btn-danger">Delete</button></a>
+            </div>
+        </div>
+    </div>
+</div>
+<!------------------------------------------------------------------------------------------------------------------------------------>
+
                                 </td>
                             </tr>
                         </table>
@@ -110,10 +159,6 @@
                                     <hr style="width: 100%;">
 
                                     <form method="post" th:action="saveNew" th:object="${userNew}">
-                                        <div class="form-group">
-                                            <label for="id">ID:</label>
-                                            <input type="number" class="form-control" id="id" th:field="*{id}" th:placeholder="${id}" readonly="readonly" />
-                                        </div>
                                         <div class="form-group">
                                             <label for="firstName">First Name:</label>
                                             <input type="text" class="form-control" id="firstName" th:field="*{firstname}" th:placeholder="${firstname}"/>
@@ -174,14 +219,14 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td th:utext="${user.getId()}">...</td>
-                        <td th:utext="${user.getFirstname()}">...</td>
-                        <td th:utext="${user.getLastname()}">...</td>
-                        <td th:utext="${user.getAge()}">...</td>
-                        <td th:utext="${user.getEmail()}">...</td>
+                        <td th:utext="${userLog.getId()}">...</td>
+                        <td th:utext="${userLog.getFirstname()}">...</td>
+                        <td th:utext="${userLog.getLastname()}">...</td>
+                        <td th:utext="${userLog.getAge()}">...</td>
+                        <td th:utext="${userLog.getEmail()}">...</td>
                         <td>
                             <ul>
-                                <li th:each="role : ${user.roles}" th:text="${#strings.substringAfter(role.getName(), '_')}"></li>
+                                <li th:each="role : ${userLog.roles}" th:text="${#strings.substringAfter(role.getName(), '_')}"></li>
                             </ul>
                         </td>
                     </tr>
@@ -192,6 +237,54 @@
     </div>
 </div>
 
+<!--&lt;!&ndash; Модальное окно для удаления пользователя &ndash;&gt;-->
+<!--<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title" id="deleteModalLabel">Delete User</h5>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <form method="post" th:action="delete" th:object="${user}">-->
+<!--                    <div class="mb-3">-->
+<!--                        <label for="deleteId" class="form-label">ID:</label>-->
+<!--                        <input type="text" th:field="*{id}" th:placeholder="${id}" class="form-control" id="deleteId" readonly>-->
+<!--                    </div>-->
+<!--                    <div class="mb-3">-->
+<!--                        <label for="deleteFirstName" class="form-label">First Name:</label>-->
+<!--                        <input type="text" th:field="*{firstname}" th:placeholder="${firstname}" class="form-control" id="deleteFirstName" readonly>-->
+<!--                    </div>-->
+<!--                    <div class="mb-3">-->
+<!--                        <label for="deleteLastName" class="form-label">Last Name:</label>-->
+<!--                        <input type="text" th:field="*{lastname}" th:placeholder="${lastname}" class="form-control" id="deleteLastName" readonly>-->
+<!--                    </div>-->
+<!--                    <div class="mb-3">-->
+<!--                        <label for="deleteAge" class="form-label">Age:</label>-->
+<!--                        <input type="text" th:field="*{age}" th:placeholder="${age}" class="form-control" id="deleteAge" readonly>-->
+<!--                    </div>-->
+<!--                    <div class="mb-3">-->
+<!--                        <label for="deleteEmail" class="form-label">Email:</label>-->
+<!--                        <input type="text" th:field="*{email}" th:placeholder="${email}" class="form-control" id="deleteEmail" readonly>-->
+<!--                    </div>-->
+<!--                    <div class="mb-3">-->
+<!--                        <label for="deleteRole" class="form-label">Role:</label>-->
+<!--                        <select th:field="*{roles}" class="form-control" id="deleteRole" multiple readonly>-->
+<!--                            <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name.substring(5)}"></option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>-->
+<!--                <button type="button" class="btn btn-danger">Delete</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+
+<!--------------------------------------------------------------------------------------->
 <script type="text/javascript">
     // Обработчик события для кнопки "Admin"
     document.getElementById('adminButton').addEventListener('click', function(event) {
