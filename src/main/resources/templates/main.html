@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+          crossorigin="anonymous">
+    <link type="text/css" href="/css/main.css" rel="stylesheet">
+    <title>Title</title>
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="row">
+            <div class="col-5 text-start">
+                <h2 class="d-inline text-white text-lg-start">
+                    <span th:text="${user.email}" style="font-weight: bold;"/>
+                </h2>
+            </div>
+            <div class="col-4 text-left">
+                <h2 class="d-inline text-white text-start">
+                    With roles:
+                    <span th:each="role : ${user.roles}" th:text="${#strings.substringAfter(role.name, '_') + ' ' }"/>
+                </h2>
+            </div>
+            <div class="col-3 text-end">
+                <h3 class="d-inline text-white text"><a th:href="@{/logout}" th:method="post" class="text-white">Logout</a></h3>
+            </div>
+        </div>
+    </div>
+</header>
+<br/>
+<!---------------------------------------------------------------------------------------->
+
+<div class="container">
+    <div class="row">
+        <div class="col-2 left-container bg-light">
+            <br/>
+            <ul class="nav flex-column nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" id="adminButton" href="#"><h3>Admin</h3></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="userButton" href="#"><h3>User</h3></a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-10 bg-light">
+            <div id="adminPanel">
+                <br><br>
+                <h1 class="text-center">Admin panel</h1>
+                <br>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="usersTab" data-bs-toggle="tab" href="#usersTable"><h4>Users table</h4></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="newUserTab" data-bs-toggle="tab" href="#newUser"><h4>New User</h4></a>
+                    </li>
+                </ul>
+
+                <!-- Здесь можно добавить содержимое таблицы пользователей -->
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="usersTable" role="tabpanel">
+                        <br>
+                        <h3 class="text-start">All users</h3>
+                        <hr style="width: 100%;">
+                        <table class="table table-striped table-hover align-middle">
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Age</th>
+                                <th>E-mail</th>
+                                <th>Role</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                                <th></th>
+                            </tr>
+                            <tr th:each ="user : ${users}">
+                                <td th:utext="${user.getId()}">...</td>
+                                <td th:utext="${user.getFirstname()}">...</td>
+                                <td th:utext="${user.getLastname()}">...</td>
+                                <td th:utext="${user.getAge()}">...</td>
+                                <td th:utext="${user.getEmail()}">...</td>
+                                <td>
+                                    <ul>
+                                        <li th:each="role : ${user.roles}" th:text="${#strings.substringAfter(role.getName(), '_')}"></li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <a href="#"><input class="btn btn-info" type="button" value="Edit"></a>
+                                </td>
+                                <td>
+                                    <a href="#"><input class="btn btn-danger" type="button" value="Delete"></a>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </div>
+
+                    <!-- Здесь можно добавить форму для создания нового пользователя -->
+                    <div class="tab-pane fade" id="newUser" role="tabpanel">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-8 mx-auto bg-light p-4">
+                                    <h3 class="text-start">Add new user</h3>
+                                    <hr style="width: 100%;">
+
+                                    <form method="post" th:action="saveNew" th:object="${userNew}">
+                                        <div class="form-group">
+                                            <label for="id">ID:</label>
+                                            <input type="number" class="form-control" id="id" th:field="*{id}" th:placeholder="${id}" readonly="readonly" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="firstName">First Name:</label>
+                                            <input type="text" class="form-control" id="firstName" th:field="*{firstname}" th:placeholder="${firstname}"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="lastName">Last Name:</label>
+                                            <input type="text" class="form-control" id="lastName" th:field="*{lastname}" th:placeholder="${lastname}" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="age">Age:</label>
+                                            <input type="number" class="form-control" id="age" th:field="*{age}" th:placeholder="${age}" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">E-mail<span style="color: red;">*</span>:</label>
+                                            <input type="email" class="form-control" id="email" th:field="*{email}" th:placeholder="${email}" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="password">Password<span style="color: red;">*</span>:</label>
+                                            <input type="password" class="form-control" id="password" th:field="*{password}" th:placeholder="${password}" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="role">Role<span style="color: red;">*</span>:</label>
+                                            <select class="form-control" id="role" th:field="*{roles}" multiple required>
+                                                <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name.substring(5)}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="text-muted small mt-2"><h6>Fields marked with <span style="color: red;">*</span> are required.</h6></div>
+                                        <div class="text-center">
+                                            <button class="btn btn-success" type="submit" id="addUserBtn" disabled>Add new user</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Здесь можно добавить содержимое панели информации пользователя -->
+            <div id="userPanel" style="display: none;">
+                <br><br>
+                <h1 class="text-center">User information-page</h1>
+                <br><br>
+                <h3 class="text-start">About User</h3>
+                <hr style="width: 100%;">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Age</th>
+                        <th>E-mail</th>
+                        <th>Role</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:utext="${user.getId()}">...</td>
+                        <td th:utext="${user.getFirstname()}">...</td>
+                        <td th:utext="${user.getLastname()}">...</td>
+                        <td th:utext="${user.getAge()}">...</td>
+                        <td th:utext="${user.getEmail()}">...</td>
+                        <td>
+                            <ul>
+                                <li th:each="role : ${user.roles}" th:text="${#strings.substringAfter(role.getName(), '_')}"></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // Обработчик события для кнопки "Admin"
+    document.getElementById('adminButton').addEventListener('click', function(event) {
+        event.preventDefault();
+        // Отображение панели "Admin panel"
+        document.getElementById('adminPanel').style.display = 'block';
+        document.getElementById('userPanel').style.display = 'none';
+
+        // Подсветка кнопки "Admin" и снятие подсветки с кнопки "User"
+        document.getElementById('adminButton').classList.add('active');
+        document.getElementById('userButton').classList.remove('active');
+    });
+
+    // Обработчик события для кнопки "User"
+    document.getElementById('userButton').addEventListener('click', function(event) {
+        event.preventDefault();
+        // Отображение панели "User Information"
+        document.getElementById('adminPanel').style.display = 'none';
+        document.getElementById('userPanel').style.display = 'block';
+
+        // Подсветка кнопки "User" и снятие подсветки с кнопки "Admin"
+        document.getElementById('userButton').classList.add('active');
+        document.getElementById('adminButton').classList.remove('active');
+    });
+</script>
+
+<script>
+    // Обновление состояния кнопки при изменении полей
+    document.addEventListener('input', function() {
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var role = document.getElementById('role').value;
+        var addUserBtn = document.getElementById('addUserBtn');
+
+        if (email !== '' && password !== '' && role !== '') {
+            addUserBtn.disabled = false;
+        } else {
+            addUserBtn.disabled = true;
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</body>
+</html>
