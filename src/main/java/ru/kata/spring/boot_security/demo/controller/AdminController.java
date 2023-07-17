@@ -9,6 +9,8 @@ import ru.kata.spring.boot_security.demo.entities.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
+import java.security.Principal;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -22,18 +24,17 @@ public class AdminController {
         this.roleService = roleService;
     }
 
+// --------------------------------------------------------------------------------------
 
     @GetMapping("/")
-    public String showAllUsers (ModelMap model) {
+    public String showAllUsers (Principal principal, ModelMap model) {
+        User user = userService.findByEmail(principal.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("roles", user.getRoles());
         model.addAttribute("users", userService.getAllUsers());
-        return "admin";
-    }
-
-    @GetMapping("/info")
-    public String addUser(ModelMap model) {
-        model.addAttribute("user", new User());
+        model.addAttribute("userNew", new User());
         model.addAttribute("allRoles", roleService.getAllRoles());
-        return "userNew";
+        return "admin";
     }
 
     @PostMapping("/saveNew")
@@ -44,7 +45,11 @@ public class AdminController {
     }
 
     @PostMapping("/saveOld")
+//    @ResponseBody
     public String saveOldUser(@ModelAttribute("user") User user) {
+        if(user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(userService.getUser(user.getId()).getRoles());
+        }
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             user.setPassword(userService.getUser(user.getId()).getPassword());
         } else {
@@ -52,13 +57,6 @@ public class AdminController {
         }
         userService.saveUser(user);
         return "redirect:/admin/";
-    }
-
-    @GetMapping(value = "/update")
-    public String updateUser(@RequestParam(value = "id") Integer id, ModelMap model) {
-        model.addAttribute("user", userService.getUser(id));
-        model.addAttribute("allRoles", roleService.getAllRoles());
-        return "userOld";
     }
 
     @GetMapping(value ="/delete")
