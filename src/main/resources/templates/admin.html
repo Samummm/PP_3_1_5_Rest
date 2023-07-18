@@ -103,7 +103,7 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <form method="post" th:action="saveOld" th:object="${user}">
+                                                    <form method="post" th:action="update" th:object="${user}">
                                                         <div class="mb-3">
                                                             <label for="editId" class="form-label">ID:</label>
                                                             <input type="text" th:value="${user.id}" name="id" class="form-control" id="editId" readonly>
@@ -129,7 +129,7 @@
                                                             <input type="password" value="" name="password" class="form-control" id="passwordEdit">
                                                         </div>
                                                         <div class="mb-3">
-                                                            <label for="deleteRole" class="form-label">Role:</label>
+                                                            <label for="editRole" class="form-label">Role:</label>
                                                             <select th:value="${user.roles}" name="roles" class="form-control" id="editRole" multiple>
                                                                 <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name.substring(5)}"></option>
                                                             </select>
@@ -158,7 +158,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="post" th:action="main">
+                <form method="post">
                     <div class="mb-3">
                         <label for="deleteId" class="form-label">ID:</label>
                         <input type="text" th:placeholder="${user.getId()}" class="form-control" id="deleteId" readonly>
@@ -210,7 +210,7 @@
                                     <h3 class="text-start">Add new user</h3>
                                     <hr style="width: 100%;">
 
-                                    <form method="post" th:action="saveNew" th:object="${userNew}">
+                                    <form method="post" th:action="save" th:object="${userNew}">
                                         <div class="form-group">
                                             <label for="firstName">First Name:</label>
                                             <input type="text" class="form-control" id="firstName" th:field="*{firstname}"/>

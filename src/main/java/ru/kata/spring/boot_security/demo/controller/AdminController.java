@@ -37,25 +37,19 @@ public class AdminController {
         return "admin";
     }
 
-    @PostMapping("/saveNew")
+    @PostMapping("/save")
     public String saveNewUser(@ModelAttribute("user") User user) {
-        user.setPassword(userService.encoder(user.getPassword()));
-        userService.saveUser(user);
+        userService.saveUser(userService.encoder(user));
         return "redirect:/admin/";
     }
 
-    @PostMapping("/saveOld")
+    @PostMapping("/update")
 //    @ResponseBody
     public String saveOldUser(@ModelAttribute("user") User user) {
         if(user.getRoles() == null || user.getRoles().isEmpty()) {
             user.setRoles(userService.getUser(user.getId()).getRoles());
         }
-        if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            user.setPassword(userService.getUser(user.getId()).getPassword());
-        } else {
-            user.setPassword(userService.encoder(user.getPassword()));
-        }
-        userService.saveUser(user);
+        userService.saveUser(userService.encoder(user));
         return "redirect:/admin/";
     }
 

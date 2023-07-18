@@ -64,8 +64,13 @@ public class UserServiceImp implements UserService , UserDetailsService {
     }
 
     @Override
-    public String encoder(String unencoded) {
-        return passwordEncoder.encode(unencoded).replace("{bcrypt}", "");
+    public User encoder(User user) {
+        if(user.getId() == null || !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()).replace("{bcrypt}", ""));
+        } else {
+            user.setPassword(userRepository.findById(user.getId()).get().getPassword());
+        }
+        return user;
     }
 }
 
