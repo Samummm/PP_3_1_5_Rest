@@ -33,4 +33,10 @@ public class AdminController {
         model.addAttribute("allRoles", roleService.getAllRoles());
         return "admin";
     }
+
+    @PostMapping("/save")
+    public String saveNewUser(@ModelAttribute("user") User user) {
+        userService.saveUser(userService.encoder(user));
+        return "redirect:/admin/";
+    }
 }

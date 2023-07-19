@@ -91,14 +91,12 @@
                                     </ul>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-info" data-bs-toggle="modal"
-                                            th:attr="data-bs-target=${'#edit'}">Edit
-                                    </button>
+                                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#edit"
+                                            data-user-id="${user.id}">Edit</button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                            th:attr="data-bs-target=${'#delete'}">Delete
-                                    </button>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete"
+                                            data-user-id="${user.id}">Delete</button>
                                 </td>
                             </tr>
                         </table>
@@ -244,8 +242,7 @@
 </div>
 
 <!------------------------------------ Delete --------------------------------------------------->
-
-<div class="modal fade" th:id="delete" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="delete" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -253,43 +250,43 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="post">
+                <form>
                     <div class="mb-3">
                         <label for="deleteId" class="form-label">ID:</label>
-                        <input type="text" th:placeholder="${user.getId()}" class="form-control" id="deleteId" readonly>
+                        <input type="text" class="form-control" id="deleteId" readonly>
                     </div>
                     <div class="mb-3">
                         <label for="deleteFirstName" class="form-label">First Name:</label>
-                        <input type="text" th:placeholder="${user.getFirstname()}" class="form-control" id="deleteFirstName" readonly>
+                        <input type="text" class="form-control" id="deleteFirstName" readonly>
                     </div>
                     <div class="mb-3">
                         <label for="deleteLastName" class="form-label">Last Name:</label>
-                        <input type="text" th:placeholder="${user.getLastname()}" class="form-control" id="deleteLastName" readonly>
+                        <input type="text" class="form-control" id="deleteLastName" readonly>
                     </div>
                     <div class="mb-3">
                         <label for="deleteAge" class="form-label">Age:</label>
-                        <input type="text" th:placeholder="${user.getAge()}" class="form-control" id="deleteAge" readonly>
+                        <input type="text" class="form-control" id="deleteAge" readonly>
                     </div>
                     <div class="mb-3">
                         <label for="deleteEmail" class="form-label">Email:</label>
-                        <input type="text" th:placeholder="${user.getEmail()}" class="form-control" id="deleteEmail" readonly>
+                        <input type="text" class="form-control" id="deleteEmail" readonly>
                     </div>
                     <div class="mb-3">
                         <label for="deleteRole" class="form-label">Role:</label>
                         <select class="form-control" id="deleteRole" multiple readonly>
-                            <option th:each="role : ${user.roles}" th:text="${role.getName().substring(5)}"></option>
+                            <!-- Здесь будут заполнены опции с помощью JavaScript -->
                         </select>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a th:href="'delete?id=' + ${user.id}"><button type="button" class="btn btn-danger">Delete</button></a>
+                <button type="button" class="btn btn-danger" th:onclick="|deleteUser()|">Delete</button>
+
             </div>
         </div>
     </div>
 </div>
-
 
 <!--------------------------------------------------------------------------------------->
 
@@ -352,7 +349,7 @@
                     editButton.textContent = 'Edit';
                     editButton.classList.add('btn', 'btn-info');
                     editButton.setAttribute('data-bs-toggle', 'modal');
-                    editButton.setAttribute('data-bs-target', `#edit${user.id}`);
+                    editButton.setAttribute('data-bs-target', `#edit`);
                     editCell.appendChild(editButton);
 
                     const deleteCell = row.insertCell();
@@ -360,18 +357,67 @@
                     deleteButton.textContent = 'Delete';
                     deleteButton.classList.add('btn', 'btn-danger');
                     deleteButton.setAttribute('data-bs-toggle', 'modal');
-                    deleteButton.setAttribute('data-bs-target', `#delete${user.id}`);
+                    deleteButton.setAttribute('data-bs-target', `#delete`);
+                    deleteButton.setAttribute('data-user-id', user.id);
+                    deleteButton.addEventListener('click', function() {
+                        deleteModal(user.id);
+                    });
                     deleteCell.appendChild(deleteButton);
                 });
             })
             .catch(error => console.log(error));
     }
+</script>
+<!--------------------------------------------------------------------------------------->
+<script>
+    function deleteModal(userId) {
+        fetch(`/admin/entities/${userId}`)
+            .then(response => response.json())
+            .then(user => {
+                // Заполнение полей модального окна данными из user
+                document.getElementById('deleteId').value = user.id;
+                document.getElementById('deleteFirstName').value = user.firstname;
+                document.getElementById('deleteLastName').value = user.lastname;
+                document.getElementById('deleteAge').value = user.age;
+                document.getElementById('deleteEmail').value = user.email;
 
-    // Вызываем функцию при загрузке страницы
-    document.addEventListener('DOMContentLoaded', fetchAllUsers);
+                const roleList = document.getElementById('deleteRole');
+                roleList.innerHTML = ''; // Очистка списка ролей
+
+                // Создание элементов списка для каждой роли
+                user.roles.forEach(role => {
+                    const roleOption = document.createElement('option');
+                    roleOption.textContent = role.name.substring(5);
+                    roleList.appendChild(roleOption);
+                });
+            })
+            .catch(error => console.log(error));
+    }
 </script>
 
 <!--------------------------------------------------------------------------------------->
+<script>
+function deleteUser() {
+    const userId = document.getElementById('deleteId').value;
+    fetch(`/admin/entities/${userId}`, {
+        method: 'DELETE'
+        })
+        .then(() => {
+            const modalElement = document.getElementById('delete');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            modalInstance.hide();
+            fetchAllUsers(); // Обновление списка пользователей
+            })
+        .catch(error => console.log(error));
+     }
+</script>
+
+<!--------------------------------------------------------------------------------------->
+
+<script>
+    // Вызываем функцию при загрузке страницы
+    document.addEventListener('DOMContentLoaded', fetchAllUsers);
+</script>
 
 <script type="text/javascript">
 
@@ -408,6 +454,7 @@
         }
     });
 </script>
+<script src="/js/jquery-3.7.0.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
