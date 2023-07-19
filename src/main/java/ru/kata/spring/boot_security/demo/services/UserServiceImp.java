@@ -30,11 +30,6 @@ public class UserServiceImp implements UserService , UserDetailsService {
     }
 
     @Override
-    public User getUserById(Integer id) {
-        return userRepository.findById(id).get();
-    }
-
-    @Override
     public void deleteUser(Integer id) {
         userRepository.deleteById(id);
     }
