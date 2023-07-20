@@ -39,6 +39,9 @@ public class AdminRestController {
 
     @PutMapping("/entities")
     public void update(@RequestBody User user) {
+        if(user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(userService.getUser(user.getId()).getRoles());
+        }
         userService.saveUser(userService.encoder(user));
     }
 

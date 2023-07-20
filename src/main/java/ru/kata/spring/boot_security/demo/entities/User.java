@@ -27,7 +27,6 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @JsonIgnore
     @Column(name = "password")
     private String password;
 
@@ -93,6 +92,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
     public Set<Role> getRoles() {
         return roles;
     }
@@ -105,12 +109,6 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
-    }
-
-    @JsonIgnore
-    @Override
-    public String getPassword() {
-        return password;
     }
 
     @JsonIgnore
