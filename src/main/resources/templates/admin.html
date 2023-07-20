@@ -111,38 +111,38 @@
                                     <h3 class="text-start">Add new user</h3>
                                     <hr style="width: 100%;">
 
-                                    <form method="post" th:action="save" th:object="${userNew}">
+                                    <form>
                                         <div class="form-group">
                                             <label for="firstName">First Name:</label>
-                                            <input type="text" class="form-control" id="firstName" th:field="*{firstname}"/>
+                                            <input type="text" class="form-control" id="firstName" value="" />
                                         </div>
                                         <div class="form-group">
                                             <label for="lastName">Last Name:</label>
-                                            <input type="text" class="form-control" id="lastName" th:field="*{lastname}"/>
+                                            <input type="text" class="form-control" id="lastName" value="" />
                                         </div>
                                         <div class="form-group">
                                             <label for="age">Age:</label>
-                                            <input type="number" class="form-control" id="age" th:field="*{age}"/>
+                                            <input type="number" class="form-control" id="age" value="" />
                                         </div>
                                         <div class="form-group">
                                             <label for="email">E-mail<span style="color: red;">*</span>:</label>
-                                            <input type="email" class="form-control" id="email" th:field="*{email}"  required />
+                                            <input type="email" class="form-control" id="email" value="" />
                                         </div>
                                         <div class="form-group">
                                             <label for="password">Password<span style="color: red;">*</span>:</label>
-                                            <input type="password" class="form-control" id="password" th:field="*{password}" required />
+                                            <input type="password" class="form-control" id="password" value="" />
                                         </div>
                                         <div class="form-group">
                                             <label for="role">Role<span style="color: red;">*</span>:</label>
-                                            <select class="form-control" id="role" th:field="*{roles}" multiple required>
+                                            <select class="form-control" id="role" multiple>
                                                 <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name.substring(5)}"></option>
                                             </select>
                                         </div>
                                         <div class="text-muted small mt-2"><h6>Fields marked with <span style="color: red;">*</span> are required.</h6></div>
-                                        <div class="text-center">
-                                            <button class="btn btn-success" type="submit" id="addUserBtn" disabled>Add new user</button>
-                                        </div>
                                     </form>
+                                    <div class="text-center">
+                                        <button class="btn btn-success" type="submit" id="addUserBtn" th:onclick="|newUser()|" disabled>Add new user</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -274,7 +274,6 @@
                     <div class="mb-3">
                         <label for="deleteRole" class="form-label">Role:</label>
                         <select class="form-control" id="deleteRole" multiple readonly>
-                            <!-- Здесь будут заполнены опции с помощью JavaScript -->
                         </select>
                     </div>
                 </form>
@@ -287,62 +286,42 @@
     </div>
 </div>
 
-<!--------------------------------------------------------------------------------------->
+<!------------------------- Show users table ------------------------------------------------------------->
 
 <script>
-    // Функция для получения данных с сервера и заполнения таблицы
     function fetchAllUsers() {
         fetch('/admin/entities')
             .then(response => response.json())
             .then(data => {
-                // Получаем таблицу по ее id
                 const table = document.getElementById('allUsers');
-
-                // Очищаем таблицу
                 table.innerHTML = '';
-
-                // Создаем строку с заголовками столбцов
                 const headerRow = table.insertRow();
                 const headers = ['ID', 'First Name', 'Last Name', 'Age', 'Email', 'Role', 'Edit', 'Delete'];
-
                 headers.forEach(headerText => {
                     const headerCell = document.createElement('th');
                     headerCell.textContent = headerText;
                     headerRow.appendChild(headerCell);
                 });
-
-                // Проходимся по каждому пользователю и создаем новую строку в таблице
                 data.forEach(user => {
                     const row = table.insertRow();
-
-                    // Создаем ячейки в строке и заполняем данными пользователя
                     const idCell = row.insertCell();
                     idCell.textContent = user.id;
-
                     const firstNameCell = row.insertCell();
                     firstNameCell.textContent = user.firstname;
-
                     const lastNameCell = row.insertCell();
                     lastNameCell.textContent = user.lastname;
-
                     const ageCell = row.insertCell();
                     ageCell.textContent = user.age;
-
                     const emailCell = row.insertCell();
                     emailCell.textContent = user.email;
-
                     const roleCell = row.insertCell();
                     const roleList = document.createElement('ul');
-
                     user.roles.forEach(role => {
                         const roleItem = document.createElement('li');
                         roleItem.textContent = role.name.substring(5);
                         roleList.appendChild(roleItem);
                     });
-
                     roleCell.appendChild(roleList);
-
-                    // Добавляем кнопки редактирования и удаления
                     const editCell = row.insertCell();
                     const editButton = document.createElement('button');
                     editButton.textContent = 'Edit';
@@ -353,7 +332,6 @@
                         editModal(user.id);
                     });
                     editCell.appendChild(editButton);
-
                     const deleteCell = row.insertCell();
                     const deleteButton = document.createElement('button');
                     deleteButton.textContent = 'Delete';
@@ -370,14 +348,67 @@
             .catch(error => console.log(error));
     }
 </script>
+<!--------------------- Request fields------------------------------------------------------------------>
+<script>
+    document.addEventListener('input', function() {
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('password').value;
+        var role = document.getElementById('role').value;
+        var addUserBtn = document.getElementById('addUserBtn');
+        if (email !== '' && password !== '' && role !== '') {
+            addUserBtn.disabled = false;
+        } else {
+            addUserBtn.disabled = true;
+        }
+    });
+</script>
+<!----------------------------- New user ---------------------------------------------------------->
+<script>
+    function newUser() {
+        const firstName = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        const age = document.getElementById('age').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const selectedRoles = Array.from(document.querySelectorAll('#role option:checked')).map(option => option.value);
+        const user = {
+            firstname: firstName,
+            lastname: lastName,
+            age: age,
+            email: email,
+            password: password,
+            roles: selectedRoles.map(roleId => ({ id: roleId }))
+        };
+        fetch(`/admin/entities`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        })
+            .then(() => {
+                document.getElementById('firstName').value = '';
+                document.getElementById('lastName').value = '';
+                document.getElementById('age').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                const editRoleSelect = document.getElementById('role');
+                editRoleSelect.selectedIndex = -1;
+                fetchAllUsers();
+                document.getElementById('newUser').classList.remove('show', 'active');
+                document.getElementById('usersTable').classList.add('show', 'active');
+                const usersTab = new bootstrap.Tab(document.getElementById('usersTab'));
+                usersTab.show();
+            })
+            .catch(error => console.log(error));
+    }
+</script>
 <!----------------------------- Edit init ---------------------------------------------------------->
-
 <script>
     function editModal(userId) {
         fetch(`/admin/entities/${userId}`)
             .then(response => response.json())
             .then(user => {
-                // Заполнение полей модального окна данными из user
                 document.getElementById('editId').value = user.id;
                 document.getElementById('editFirstName').value = user.firstname;
                 document.getElementById('editLastName').value = user.lastname;
@@ -388,20 +419,16 @@
             .catch(error => console.log(error));
     }
 </script>
-
 <!----------------------------- Edit finish ---------------------------------------------------------->
-
 <script>
     function editUser() {
         const userId = document.getElementById('editId').value;
-
         const firstName = document.getElementById('editFirstName').value;
         const lastName = document.getElementById('editLastName').value;
         const age = document.getElementById('editAge').value;
         const email = document.getElementById('editEmail').value;
         const password = document.getElementById('passwordEdit').value;
         const selectedRoles = Array.from(document.querySelectorAll('#editRole option:checked')).map(option => option.value);
-        // alert(userId + " " + firstName + " " + lastName + " " + age + " " + email + " " + password + " " + selectedRoles);
         const user = {
             id: userId,
             firstname: firstName,
@@ -411,7 +438,6 @@
             password: password,
             roles: selectedRoles.map(roleId => ({ id: roleId }))
         };
-
         fetch(`/admin/entities`, {
             method: 'PUT',
             headers: {
@@ -425,29 +451,24 @@
                     const editRoleSelect = document.getElementById('editRole');
                     editRoleSelect.selectedIndex = -1;
                     modalInstance.hide();
-                    fetchAllUsers(); // Обновление списка пользователей
+                    fetchAllUsers();
             })
             .catch(error => console.log(error));
     }
 </script>
-
 <!-------------------------- Delete init ------------------------------------------------------------->
 <script>
     function deleteModal(userId) {
         fetch(`/admin/entities/${userId}`)
             .then(response => response.json())
             .then(user => {
-                // Заполнение полей модального окна данными из user
                 document.getElementById('deleteId').value = user.id;
                 document.getElementById('deleteFirstName').value = user.firstname;
                 document.getElementById('deleteLastName').value = user.lastname;
                 document.getElementById('deleteAge').value = user.age;
                 document.getElementById('deleteEmail').value = user.email;
-
                 const roleList = document.getElementById('deleteRole');
-                roleList.innerHTML = ''; // Очистка списка ролей
-
-                // Создание элементов списка для каждой роли
+                roleList.innerHTML = '';
                 user.roles.forEach(role => {
                     const roleOption = document.createElement('option');
                     roleOption.textContent = role.name.substring(5);
@@ -457,7 +478,6 @@
             .catch(error => console.log(error));
     }
 </script>
-
 <!----------------------------- Delete finish ---------------------------------------------------------->
 <script>
 function deleteUser() {
@@ -469,54 +489,34 @@ function deleteUser() {
             const modalElement = document.getElementById('delete');
             const modalInstance = bootstrap.Modal.getInstance(modalElement);
             modalInstance.hide();
-            fetchAllUsers(); // Обновление списка пользователей
+            fetchAllUsers();
             })
         .catch(error => console.log(error));
      }
 </script>
-
-<!--------------------------------------------------------------------------------------->
-
+<!------------------------------- Begin -------------------------------------------------------->
 <script>
-    // Вызываем функцию при загрузке страницы
     document.addEventListener('DOMContentLoaded', fetchAllUsers);
 </script>
-
+<!------------------------------ Swich --------------------------------------------------------->
 <script type="text/javascript">
-
     document.getElementById('adminButton').addEventListener('click', function(event) {
         event.preventDefault();
         document.getElementById('adminPanel').style.display = 'block';
         document.getElementById('userPanel').style.display = 'none';
-
         document.getElementById('adminButton').classList.add('active');
         document.getElementById('userButton').classList.remove('active');
     });
-
     document.getElementById('userButton').addEventListener('click', function(event) {
         event.preventDefault();
         document.getElementById('adminPanel').style.display = 'none';
         document.getElementById('userPanel').style.display = 'block';
-
         document.getElementById('userButton').classList.add('active');
         document.getElementById('adminButton').classList.remove('active');
     });
 </script>
+<!--------------------------------------------------------------------------------------->
 
-<script>
-    document.addEventListener('input', function() {
-        var email = document.getElementById('email').value;
-        var password = document.getElementById('password').value;
-        var role = document.getElementById('role').value;
-        var addUserBtn = document.getElementById('addUserBtn');
-
-        if (email !== '' && password !== '' && role !== '') {
-            addUserBtn.disabled = false;
-        } else {
-            addUserBtn.disabled = true;
-        }
-    });
-</script>
 <script src="/js/jquery-3.7.0.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
