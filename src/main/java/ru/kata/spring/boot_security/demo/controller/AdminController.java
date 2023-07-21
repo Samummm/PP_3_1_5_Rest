@@ -34,9 +34,4 @@ public class AdminController {
         return "admin";
     }
 
-    @PostMapping("/save")
-    public String saveNewUser(@ModelAttribute("user") User user) {
-        userService.saveUser(userService.encoder(user));
-        return "redirect:/admin/";
-    }
 }
